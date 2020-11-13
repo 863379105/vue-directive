@@ -10,21 +10,59 @@
             width: 300px;
             height: 300px;
             position: absolute;
-            left: 0;
-            top: 0;
+            left: 100px;
+            top: 100px;
             background-color: tomato;
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <div id="box">
-            
+        <div id="box" v-drag>
+
         </div>
     </div>
 
     <script>
+        //自定义局部指令
+        new Vue({
+            el : '#app',
+            directives : {
+                'drag' : {
+                    bind : (el,binding) => {
+                        console.log("el",el);
+                        console.log("binding",binding);
+                        
+                        let disX =0,disY=0
+                        let isDrag = false
+                        el.addEventListener('mousedown',(e) => {
+                            isDrag = true
+                            console.log(e);
+                            //获取鼠标按下时，鼠标的坐标
+                            disX = e.clientX - e.offsetX
+                            disY =e.clientY - e.offsetY
+                            e.preventDefault()
+                        })
+                        document.addEventListener('mousemove',(e) => {
+                            console.log(e);
+                            if(isDrag){
+                                let x = e.clientX - disX;
+                                let y = e.clientY - disY; 
+                            
+                                el.style.left = x + 'px';
+                                el.style.top = y + 'px';
+                            }
+                        })
+                        document.addEventListener('mouseup', e => {
+                            isDrag = false;
+                        });
+                    }
+                }
+            }
+        })
 
+
+        //也可以自定义全局指令：通过 Vue.directive
     </script>
 </body>
 </html>
