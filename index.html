@@ -30,31 +30,12 @@
             directives : {
                 'drag' : {
                     bind : (el,binding) => {
-                        console.log("el",el);
-                        console.log("binding",binding);
-                        
-                        let disX =0,disY=0
-                        let isDrag = false
                         el.addEventListener('mousedown',(e) => {
-                            isDrag = true
-                            console.log(e);
-                            //获取鼠标按下时，鼠标的坐标
-                            disX = e.clientX - e.offsetX
-                            disY =e.clientY - e.offsetY
-                            e.preventDefault()
                         })
                         document.addEventListener('mousemove',(e) => {
-                            console.log(e);
-                            if(isDrag){
-                                let x = e.clientX - disX;
-                                let y = e.clientY - disY; 
-                            
-                                el.style.left = x + 'px';
-                                el.style.top = y + 'px';
-                            }
+
                         })
                         document.addEventListener('mouseup', e => {
-                            isDrag = false;
                         });
                     }
                 }
