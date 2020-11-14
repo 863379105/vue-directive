@@ -12,6 +12,7 @@
             margin: 0 auto;
             position: relative;
             border: 1px skyblue solid;
+            font-size: 12px;
         }
         #box{
             width: 100px;
@@ -20,25 +21,47 @@
             left: 10px;
             top: 10px;
             background-color: tomato;
+            color: rgb(100, 92, 100);
+            line-height: 100px;
+            text-align: center;
+        }
+        #box1{
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            left: 190px;
+            top: 10px;
+            background-color: rgb(230, 156, 143);
+            line-height: 100px;
+            text-align: center;
+        }
+        button{
+            display: block;
+            margin: 10px auto;
         }
     </style>
 </head>
 <body>
     <div id="app">
         <div id="wrapper">
-            <div id="box" v-drag>
-            </div>
+            <div id="box" v-drag = 'dragFlag'>无限制</div>
+            <div id="box1" v-drag.limit = 'dragFlag'>有限制</div>
         </div>
-        
+        <button @click = "dragFlag = !dragFlag" v-if = 'dragFlag'>点我禁止移动小方块</button>
+        <button @click = "dragFlag = !dragFlag" v-if = '!dragFlag'>点我可以移动小方块</button>
     </div>
 
     <script>
         //自定义局部指令
-        new Vue({
+        let app = new Vue({
             el : '#app',
+            data : {
+                dragFlag : false
+            },
             directives : {
                 'drag' : {
                     bind : (el,binding) => {
+                        el.dragFlag = binding.value
                         let isDarg = false
                         let elLeft = 0
                         let elTop = 0
@@ -52,22 +75,24 @@
                             disY = e.clientY
                         })
                         document.addEventListener('mousemove',(e) => {
-                            if(isDarg){
+                            if(isDarg && el.dragFlag){
                                 let x = e.clientX - disX + elLeft
                                 let y = e.clientY -disY + elTop     
                                 let maxLeft = parseInt(getComputedStyle(el.parentNode).width) - parseInt(getComputedStyle(el).width)
                                 let maxTop = parseInt(getComputedStyle(el.parentNode).height) - parseInt(getComputedStyle(el).height)
-                                if(x < 0){
-                                    x = 0
-                                }
-                                if(x > maxLeft){
-                                    x = maxLeft
-                                }
-                                if(y < 0){
-                                    y = 0
-                                }
-                                if(y > maxTop){
-                                    y = maxTop
+                                if(binding.modifiers.limit){
+                                    if(x < 0){
+                                        x = 0
+                                    }
+                                    if(x > maxLeft){
+                                        x = maxLeft
+                                    }
+                                    if(y < 0){
+                                        y = 0
+                                    }
+                                    if(y > maxTop){
+                                        y = maxTop
+                                    }
                                 }
                                 el.style.left = `${x}px`
                                 el.style.top = `${y}px`
@@ -76,6 +101,9 @@
                         document.addEventListener('mouseup', e => {
                             isDarg = false
                         });
+                    },
+                    componentUpdated : (el,binding) => {
+                        el.dragFlag = binding.value
                     }
                 }
             }
