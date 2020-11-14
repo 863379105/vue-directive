@@ -6,21 +6,30 @@
     <title>Document</title>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <style>
-        #box{
+        #wrapper{
             width: 300px;
             height: 300px;
+            margin: 0 auto;
+            position: relative;
+            border: 1px skyblue solid;
+        }
+        #box{
+            width: 100px;
+            height: 100px;
             position: absolute;
-            left: 100px;
-            top: 100px;
+            left: 10px;
+            top: 10px;
             background-color: tomato;
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <div id="box" v-drag>
-
+        <div id="wrapper">
+            <div id="box" v-drag>
+            </div>
         </div>
+        
     </div>
 
     <script>
@@ -30,12 +39,42 @@
             directives : {
                 'drag' : {
                     bind : (el,binding) => {
+                        let isDarg = false
+                        let elLeft = 0
+                        let elTop = 0
+                        let disX = 0
+                        let disY = 0
                         el.addEventListener('mousedown',(e) => {
+                            isDarg = true
+                            elLeft = parseInt(getComputedStyle(el).left)
+                            elTop = parseInt(getComputedStyle(el).top)
+                            disX = e.clientX
+                            disY = e.clientY
                         })
                         document.addEventListener('mousemove',(e) => {
-
+                            if(isDarg){
+                                let x = e.clientX - disX + elLeft
+                                let y = e.clientY -disY + elTop     
+                                let maxLeft = parseInt(getComputedStyle(el.parentNode).width) - parseInt(getComputedStyle(el).width)
+                                let maxTop = parseInt(getComputedStyle(el.parentNode).height) - parseInt(getComputedStyle(el).height)
+                                if(x < 0){
+                                    x = 0
+                                }
+                                if(x > maxLeft){
+                                    x = maxLeft
+                                }
+                                if(y < 0){
+                                    y = 0
+                                }
+                                if(y > maxTop){
+                                    y = maxTop
+                                }
+                                el.style.left = `${x}px`
+                                el.style.top = `${y}px`
+                            }
                         })
                         document.addEventListener('mouseup', e => {
+                            isDarg = false
                         });
                     }
                 }
